@@ -12,7 +12,7 @@ app.get("/api/v1", (req, res) => {
   res.json("");
 });
 
-app.post("/api/v1/cadastro", (req, res) => {
+app.post("/api/v1/controle", (req, res) => {
   let connection = mysql.createConnection({
     host: "jovemti.com",
     user: "jovemti1_webservice",
@@ -23,52 +23,98 @@ app.post("/api/v1/cadastro", (req, res) => {
 
   connection.connect(error => {
     if (error) {
-      connection.end()
-      return res.json("Error")
+      connection.end();
+      return res.json("Error");
     }
 
     let controle = req.body;
     controle.data = new Date();
-    
-    connection.query(`INSERT INTO serial(data) Values('${new Date()}')`, (error, results, fields) => {                
-        if(error){
-            connection.end()
-            return res.status(400).json(error)
-        }
-        controle.senha = results.insertId;    
-        connection.query(`INSERT INTO controle(placa, portao, nota, data, senha) Values('${controle.placa}', ${controle.portao}, ${controle.nota}, '${controle.data}', ${controle.senha})`, (error, results, fields) => {                
-            if(error){
-                connection.end()
-                return res.status(400).json(error)
-            }    
-            controle.id = results.insertId
-            connection.end()
-            return res.json(controle)
-        })
-    })
-  })
-})
 
-app.get("/api/v1/consulta", (req, res) => {
-    let connection = mysql.createConnection({
-        host: "jovemti.com",
-        user: "jovemti1_webservice",
-        password: "Guardiao91",
-        database: "jovemti1_api",
-        port: 3306
-      })
-    
-      connection.connect(error => {
+    connection.query(
+      `INSERT INTO serial(data) Values('${new Date()}')`,
+      (error, results, fields) => {
         if (error) {
-          connection.end()
-          return res.json("Error")
+          connection.end();
+          return res.status(400).json(error);
         }
-    
-        connection.query("select * from serial", (error, results, fields) => {                    
-            connection.end()
-            return res.json(results)
-        })
-      })
-})
+        controle.senha = results.insertId;
+        connection.query(
+          `INSERT INTO controle(placa, portao, nota, data, senha) Values('${
+            controle.placa
+          }', ${controle.portao}, ${controle.nota}, '${controle.data}', ${
+            controle.senha
+          })`,
+          (error, results, fields) => {
+            if (error) {
+              connection.end();
+              return res.status(400).json(error);
+            }
+            controle.id = results.insertId;
+            connection.end();
+            return res.status(200).json(controle);
+          }
+        );
+      }
+    );
+  });
+});
+
+app.post("/api/v1/senha/limpar", (req, res) => {
+  let connection = mysql.createConnection({
+    host: "jovemti.com",
+    user: "jovemti1_webservice",
+    password: "Guardiao91",
+    database: "jovemti1_api",
+    port: 3306
+  });
+
+  connection.connect(error => {
+    if (error) {
+      connection.end();
+      return res.json("Error");
+    }
+    connection.query(
+      "delete from serial where chave > 0",
+      (error, results, fields) => {
+        if (error) {
+          connection.end();
+          return res.status(400).json(error);
+        }
+        connection.query(
+          "ALTER TABLE serial AUTO_INCREMENT = 0",
+          (error, results, fields) => {
+            if (error) {
+              connection.end();
+              return res.status(400).json(error);
+            }
+            return res.status(200).json({sucess: true});
+          }          
+        );
+      }
+    );
+  });
+});
+
+app.get("/api/v1/controle", (req, res) => {
+  let connection = mysql.createConnection({
+    host: "jovemti.com",
+    user: "jovemti1_webservice",
+    password: "Guardiao91",
+    database: "jovemti1_api",
+    port: 3306
+  });
+
+  connection.connect(error => {
+    if (error) {
+      connection.end();
+      return res.json("Error");
+    }
+
+    connection.query("select * from serial", (error, results, fields) => {
+      connection.end();
+      return res.json(results);
+    });
+  });
+});
 
 app.listen(port, () => console.log(`listening on port ${port}!`));
