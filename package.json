@@ -1,0 +1,25 @@
+{
+  "name": "jovemtiexample",
+  "version": "1.0.0",
+  "description": "Aplicação de exemplo",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jovemti/jovemtiexample.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jovemti/jovemtiexample/issues"
+  },
+  "homepage": "https://github.com/jovemti/jovemtiexample#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mysql": "^2.16.0"
+  }
+}
